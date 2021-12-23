@@ -1,0 +1,16 @@
+#+title: Chart generator
+#+author: Miguel Piña
+#+date: [2021-12-23 jue 09:45]
+
+* How to install dependencies and run the code
+
+This repository use virtualenv as a way to provide project isolation respect to
+the system. The python's version that I use for develop this was =python 3.9.7=,
+but should it works with any superior version. To install dependencies and
+enable virtualenv, execute the following commands:
+
+#+begin_src sh
+  python3 -m venv ./.venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+#+end_src
