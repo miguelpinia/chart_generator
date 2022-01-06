@@ -17,7 +17,6 @@ def read_json(path_file):
 
 def plot_llic(path_file):
     json_data = read_json(path_file)
-    # pprint(json_data)
     cas = json_data['CAS']
     fai = json_data['FAI']
     rw = json_data['RW']
