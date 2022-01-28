@@ -7,7 +7,7 @@ import numpy as np
 from datetime import datetime
 from pprint import pprint
 
-MARKER = itertools.cycle(('s', '*', 'p', 'v', 'X', '^', 'D', 'o', 'P', '1'))
+MARKER = itertools.cycle(('s', '*', 'p', 'v', 'X', '^', 'D', 'o', 'P', '1', '8'))
 
 def read_json(path_file):
     """Read the json from the `path_file`"""
@@ -47,7 +47,7 @@ def plot_llic(path_file):
 
 def plot_llic_iters(path_file, iters):
     json_data = read_json(path_file)
-    algs = ['RW', 'RWNC', 'RW16', 'RW32', 'RW128', 'RWWC', 'CAS', 'FAI']
+    algs = ['RW', 'RWNC', 'RW16', 'RW32', 'RW128', 'RWWC', 'CAS', 'FAI', 'FAIDELAY', 'FAIRANDOM', 'RWNS']
     alg_names = [
         {'name': 'LL/IC without False Sharing', 'ls': '-'},
         {'name': 'LL/IC with False Sharing', 'ls': '-'},
@@ -56,7 +56,10 @@ def plot_llic_iters(path_file, iters):
         {'name': 'LL/IC 128 bits without False Sharing', 'ls': '--'},
         {'name': 'LL/IC without False Sharing and no cycle in IC', 'ls': '--'},
         {'name': 'LL/IC CAS', 'ls': ':'},
-        {'name': 'Fetch & Inc', 'ls': ':'}
+        {'name': 'Fetch & Inc', 'ls': ':'},
+        {'name': 'Fetch & Inc Delay', 'ls': ':'},
+        {'name': 'Fetch & Inc Random', 'ls': ':'},
+        {'name': 'LL/IC new Solution', 'ls': '-'}
     ]
     data = {alg: [] for alg in algs}
     for i in range(iters):
@@ -70,7 +73,7 @@ def plot_llic_iters(path_file, iters):
     minor_ticks = np.arange(0, size+1, 1)
     plt.margins(0,0)
     fig, axes = plt.subplots()
-    axes.set_ylabel('Time in ms')
+    axes.set_ylabel('Time in ns')
     axes.set_xlabel('Processors')
     axes.set_xticks(major_ticks, major=True)
     axes.set_xticks(minor_ticks, minor=True)
