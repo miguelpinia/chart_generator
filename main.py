@@ -45,32 +45,34 @@ def plot_llic(path_file):
     plt.gcf().set_size_inches(19.2, 10.8)
     plt.savefig('time-measurment-{}.png'.format(current_time))
 
-def plot_llic_iters(path_file, iters):
+def plot_llic_iters(path_file):
     json_data = read_json(path_file)
-    algs = ['RW', 'RWNC', 'RW16', 'RW32', 'RW128', 'RWWC', 'CAS', 'FAI', 'FAIDELAY', 'FAIRANDOM', 'RWNS']
+    algs = ['FAIDELAY', 'CAS', 'RW', 'RWNC', 'RWSQRT', 'RWSQRTFS', 'RWWC', 'RWWCNP'] #'RWNSR'
+    iterations = json_data['iterations']
+    processors = json_data['processors_num']
     alg_names = [
-        {'name': 'LL/IC without False Sharing', 'ls': '-'},
-        {'name': 'LL/IC with False Sharing', 'ls': '-'},
-        {'name': 'LL/IC 16 bits without False Sharing', 'ls': '--'},
-        {'name': 'LL/IC 32 bits without False Sharing', 'ls': '--'},
-        {'name': 'LL/IC 128 bits without False Sharing', 'ls': '--'},
-        {'name': 'LL/IC without False Sharing and no cycle in IC', 'ls': '--'},
-        {'name': 'LL/IC CAS', 'ls': ':'},
-        {'name': 'Fetch & Inc', 'ls': ':'},
         {'name': 'Fetch & Inc Delay', 'ls': ':'},
-        {'name': 'Fetch & Inc Random', 'ls': ':'},
-        {'name': 'LL/IC new Solution', 'ls': '-'}
+        {'name': 'LL/IC CAS', 'ls': ':'},
+        {'name': 'LL/IC without False Sharing', 'ls': '-'},
+        {'name': 'LL/IC', 'ls': '-'},
+        {'name': 'LL/IC Sqrt size', 'ls': '-'},
+        {'name': 'LL/IC Sqrt size without false share', 'ls': '-'},
+        {'name': 'LL/IC without False Sharing and no cycle in IC', 'ls': '--'},
+        {'name': 'LL/IC no cycle in IC', 'ls': '--'},
+        # {'name': 'Fetch & Inc Random', 'ls': ':'},
+        # {'name': 'LL/IC Sqrt size relaxed', 'ls': '-'}
     ]
     data = {alg: [] for alg in algs}
-    for i in range(iters):
+    for i in range(iterations):
         iter_vals = json_data['iter-{}'.format(i)]
         data = {alg: data[alg] + [iter_vals[alg]] for alg in algs}
+    # print(data)
     data = {alg: np.mean(data[alg], axis = 0) for alg in algs}
-    print(data)
-    size = len(data[algs[0]])
-    nrange = np.arange(1, size + 1)
-    major_ticks = np.arange(0, size+1, 8)
-    minor_ticks = np.arange(0, size+1, 1)
+    # print(data)
+    # size = len(data[algs[0]])
+    nrange = np.arange(1, processors + 1)
+    major_ticks = np.arange(0, processors + 1, 8)
+    minor_ticks = np.arange(0, processors + 1, 1)
     plt.margins(0,0)
     fig, axes = plt.subplots()
     axes.set_ylabel('Time in ns')
@@ -80,14 +82,15 @@ def plot_llic_iters(path_file, iters):
     axes.grid(which='both', axis='both')
     axes.grid(which='minor', alpha=0.2)
     axes.grid(which='major', alpha=0.5)
-    fig.suptitle('Time to perform 500,000,000 of interspersed LL/IC')
+    axes.set_ylim([0, 4e8])
+    fig.suptitle('Time to perform 5,000,000 of interspersed LL/IC')
     for idx, alg in enumerate(algs):
         axes.plot(nrange, data[alg], marker=next(MARKER),
                   ls=alg_names[idx]['ls'], label=alg_names[idx]['name'])
     axes.legend()
     current_time = datetime.now().strftime("%H:%M:%S")
     plt.gcf().set_size_inches(19.2, 10.8)
-    plt.savefig('[MEAN-{}]time-measurment-{}.png'.format(iters, current_time))
+    plt.savefig('[MEAN-{}]time-measurment-{}.png'.format(iterations, current_time))
 
 
 def plot_latency(path_file):
@@ -167,11 +170,11 @@ def main():
         dest='lat',
         help='''Plot the chart for latency tests'''
     )
-    parser.add_argument(
-        '--iters',
-        dest='iters',
-        help='''Iterations number'''
-    )
+    # parser.add_argument(
+    #     '--iters',
+    #     dest='iters',
+    #     help='''Iterations number'''
+    # )
     parser.add_argument(
         '--llicm',
         dest='llicm',
@@ -190,7 +193,7 @@ def main():
     elif args.latm:
         plot_latency_iters(args.latm, int(args.iters))
     elif args.llicm:
-        plot_llic_iters(args.llicm, int(args.iters))
+        plot_llic_iters(args.llicm)
 
 if __name__ == '__main__':
     main()
